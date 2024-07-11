@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="flex flex-row h-[100vh] w-[100vw]">
+      <div class="bg-gray-200 h-[100vh] w-[20vw]">
+        <ul class="mt-5 flex flex-col">
+          <li class="text-white m-6 bg-gray-500 p-3 rounded-md">upload video</li>
+          <li
+            class="text-blue-950 mx-6 hover:text-white hover:bg-gray-500 bg-gray-200 p-3 rounded-md"
+            onclick="window.location.replace('/videos.html')"
+          >
+            My Videos
+          </li>
+        </ul>
+      </div>
+      <div class="p-[20vh] h-[100vh] w-[80vw]">
+        <div class="flex flex-col w-[300px] inputBox">
+          <input
+            type="text"
+            class="py-2 px-4 border-solid border-gray-600 border-2 rounded-md videoName"
+            placeholder="Video Name"
+          />
+
+          <div class="flex items-center justify-center w-full">
+            <label
+              for="dropzone-file"
+              class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 mt-5"
+            >
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg
+                  class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                  />
+                </svg>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span class="font-semibold">Click to upload
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  select video of type .mp4
+                </p>
+              </div>
+              <input  type="file" id="dropzone-file" class="hidden fileUpload" onchange="setFile(event)" />
+            </label>
+          </div>
+
+          <button
+            class="submit bg-red-400 hover:bg-red-600 hover:text-white text-gray-700 font-semibold rounded-md py-2 px-3 mt-5"
+          >
+            upload video
+          </button>
+          
+        </div>
+      </div>
+      <div id="loader">
+
+      </div>
+
+      
+
+
+
+      <script>
+        const videoName = document.querySelector(".videoName");
+        let fileName;
+        let file;
+        function setFile(event){
+            console.log(event);
+
+            event.preventDefault();
+            file=event.target.files[0];
+           fileName=file.name;
+           
+        }
+        const submitBTN = document.querySelector(".submit");
+        let resultUrl;
+        submitBTN.addEventListener('click',async()=>{
+          
+         
+      
+         const mainV=document.querySelector('#loader')
+
+          mainV.innerHTML=`<div class="   h-[100vh] w-[100vw] flex mt- justify-center " style="position: absolute;top: 0;left:0;background: rgba(0, 0, 0, .5);">
+        <div class='flex space-x-2 justify-center items-center  h-screen '>
+<span class='sr-only'>Loading...</span>
+<div class='h-8 w-8 bg-white rounded-full animate-bounce [animation-delay:-0.3s]'></div>
+<div class='h-8 w-8 bg-white rounded-full animate-bounce [animation-delay:-0.15s]'></div>
+<div class='h-8 w-8 bg-white rounded-full animate-bounce'></div>
+</div>
+</div>
+`
+            const fileNameArr=fileName.split('.');
+            
+            const fileEndingTag=fileNameArr[fileNameArr.length-1];
+           
+            
+  
+
+            fetch('http://localhost:8080/video',{
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({name:videoName.value,fileName})
+            }).then((res1)=>{
+              return res1.json();
+            }).then((result1)=>{
+              resultUrl=result1;
+              console.log(resultUrl);
+            
+           
+            }).then(()=>{
+                fetch(resultUrl,{
+                method:"PUT",
+                headers:{
+                    "Content-Type":'video/mp4'
+                },
+                body:file
+            }).then(()=>{
+              console.log("uploaded");
+              const videoNN=`outputs/${fileName}`;
+              console.log(videoNN);
+              fetch('http://localhost:8080/transcode',{
+                method:"POST",
+                headers:{
+                  "Content-Type":"application/json"
+                },
+                body:JSON.stringify({videoKey:videoNN})
+              }).then((result3)=>{
+
+                alert('Video has been uploaded but take few seconds or few minutes for processing. We are redirecting you to my video page .after some time you will be able to play your video!!!');
+         
+         window.location.replace('/videos.html')
+                
+                  
+                 
+              })
+            })
+            })
+            
+               
+          
+            
+        })
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "consumerserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-ecs": "^3.598.0",
+    "@aws-sdk/client-s3": "^3.598.0",
+    "@aws-sdk/client-sqs": "^3.598.0",
+    "@aws-sdk/s3-request-presigner": "^3.598.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "kafkajs": "^2.2.4",
+    "mongoose": "^8.4.1"
+  }
+}
